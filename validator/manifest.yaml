@@ -1,0 +1,20 @@
+dist:
+  module: github.com/open-telemetry/opentelemetry-collector-releases/core
+  name: otel-validator
+  description: OpenTelemetry Compliance Validator
+  version: 0.0.1
+  output_path: ./bin
+  otelcol_version: 0.68.0
+
+receivers:
+  - gomod: go.opentelemetry.io/collector/receiver/otlpreceiver v0.68.0
+
+exporters:
+  - gomod: go.opentelemetry.io/collector/exporter/loggingexporter v0.68.0
+  - gomod: github.com/codeboten/opentelemetry-compliance/validator v0.0.0
+
+processors:
+  - gomod: go.opentelemetry.io/collector/processor/batchprocessor v0.68.0
+
+replaces:
+  - github.com/codeboten/opentelemetry-compliance/validator => ../validator
