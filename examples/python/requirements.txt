@@ -1,0 +1,4 @@
+requests
+opentelemetry-instrumentation-requests
+opentelemetry-distro[otlp]
+opentelemetry-instrumentation
