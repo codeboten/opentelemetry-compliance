@@ -26,10 +26,10 @@ endif
 
 .PHONY: otel-validator
 otel-validator:
-	$(OTELCOL_BUILDER) --config ./validator/manifest.yaml
+	$(OTELCOL_BUILDER) --config $(shell git rev-parse --show-toplevel)/validator/manifest.yaml
 
 ./bin/otel-validator:
-	$(OTELCOL_BUILDER) --config ./validator/manifest.yaml
+	$(OTELCOL_BUILDER) --config $(shell git rev-parse --show-toplevel)/validator/manifest.yaml
 
 .PHONY: go
 go:
@@ -51,4 +51,4 @@ push-tags:
 
 .PHONY: clean
 clean:
-	rm -Rf ./bin
+	rm -Rf $(shell git rev-parse --show-toplevel)/bin
