@@ -33,3 +33,10 @@ Run with `dlv` to debug the collector execution
 ```bash
 dlv --listen=:2345 --headless=true --api-version=2 --accept-multiclient --log exec bin/otel-validator -- --config validator/config.yaml
 ```
+
+To avoid a `no such file or directory` error when running the debugger, this needs to be added to `$HOME/.config/dlv/config.yml`:
+
+```
+substitute-path:
+  - {from: github.com/codeboten/opentelemetry-compliance/validator@v0.0.0, to: /your/path/to/the/local/repo/opentelemetry-compliance/validator}
+```
