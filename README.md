@@ -25,3 +25,11 @@ Run code that produces telemetry and emits it using OTLP. The current example us
 ```bash
 ./start.sh
 ```
+
+### Run with dlv
+
+Run with `dlv` to debug the collector execution
+
+```bash
+dlv --listen=:2345 --headless=true --api-version=2 --accept-multiclient --log exec bin/otel-validator -- --config validator/config.yaml
+```
