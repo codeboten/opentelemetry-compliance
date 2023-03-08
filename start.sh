@@ -22,17 +22,17 @@ install_ocb
 build_collector
 
 echo "Run validator"
-${COLLECTOR} --config ${ROOT}/validator/config.yaml &
-VALIDATOR_PID=$!
+# ${COLLECTOR} --config ${ROOT}/validator/config.yaml &
+# VALIDATOR_PID=$!
 
 function onshutdown {
     kill ${VALIDATOR_PID}
 }
-trap onshutdown EXIT
+# trap onshutdown EXIT
 
 echo "Emitting telemetry"
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r ./examples/python/requirements.txt
+# pip install -r ./examples/python/requirements.txt
 opentelemetry-instrument ./examples/python/test.py
 deactivate
