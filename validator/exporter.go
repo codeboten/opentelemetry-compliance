@@ -3,6 +3,7 @@ package validator
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/exporter"
@@ -18,13 +19,28 @@ type validatorExporter struct {
 // validateTraces validates each span against its semantic convention
 func (ve *validatorExporter) validateTraces(ctx context.Context, td ptrace.Traces) error {
 	resourceSpans := td.ResourceSpans()
-	if resourceSpans.Len() == 0 {
-		return nil
-	}
-	for i := 0; i < resourceSpans.Len(); i++ {
-		fmt.Println(resourceSpans.At(i))
-	}
+	resource_spans_0 := resourceSpans.At(0)
+	scopespans := resource_spans_0.ScopeSpans()
+	scopespan := scopespans.At(0)
+	// pdata/ptrace/generated_traces.go:401
+	spans := scopespan.Spans()
+	// pdata/ptrace/generated_traces.go:452
+	span := spans.At(0)
+	// pdata/ptrace/generated_traces.go:580
+	actual_span_name := span.TraceID()
+	fmt.Println("TEST SPAN NAME")
+	expected_span_name := "HTTP GET"
+	string_builder := strings.Builder{}
+	if actual_span_name == "HTTP GET":
+	strint_builder.WriteString()
+	fmt.Println()
+	fmt.Println(trace_id)
 	return nil
+}
+
+func TestSpanName(t *testing.T) {
+
+
 }
 
 // validateMetrics validates each metric against its semantic convention
