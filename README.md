@@ -31,7 +31,7 @@ Run code that produces telemetry and emits it using OTLP. The current example us
 Run with `dlv` to debug the collector execution
 
 ```bash
-dlv --listen=:2345 --headless=true --api-version=2 --accept-multiclient --log exec bin/otel-validator -- --config validator/config.yaml
+dlv exec bin/otel-validator -- --config validator/config.yaml
 ```
 
 To avoid a `no such file or directory` error when running the debugger, this needs to be added to `$HOME/.config/dlv/config.yml`:
