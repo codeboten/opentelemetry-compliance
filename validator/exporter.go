@@ -3,7 +3,7 @@ package validator
 import (
 	"context"
 	"fmt"
-	"strings"
+	"testing"
 
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/exporter"
@@ -27,19 +27,12 @@ func (ve *validatorExporter) validateTraces(ctx context.Context, td ptrace.Trace
 	// pdata/ptrace/generated_traces.go:452
 	span := spans.At(0)
 	// pdata/ptrace/generated_traces.go:580
-	actual_span_name := span.TraceID()
-	fmt.Println("TEST SPAN NAME")
-	expected_span_name := "HTTP GET"
-	string_builder := strings.Builder{}
-	if actual_span_name == "HTTP GET":
-	strint_builder.WriteString()
-	fmt.Println()
+	trace_id := span.TraceID()
 	fmt.Println(trace_id)
 	return nil
 }
 
 func TestSpanName(t *testing.T) {
-
 
 }
 
