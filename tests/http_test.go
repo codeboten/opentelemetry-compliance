@@ -15,19 +15,6 @@ func init() {
 	godog.BindCommandLineFlags("godog.", &opts)
 }
 
-func TestMain(m *testing.M) {
-	pflag.Parse()
-	opts.Paths = pflag.Args()
-
-	status := godog.TestSuite{
-		Name:                "godogs",
-		ScenarioInitializer: InitializeScenario,
-		Options:             &opts,
-	}.Run()
-
-	os.Exit(status)
-}
-
 func thatLowCardinalityRouteAvailableIs(arg1 string) error {
 	return godog.ErrPending
 }
@@ -50,6 +37,19 @@ func thereIsAnHTTPServerWithoutALowCardinalityRouteAvailable() error {
 
 func thereIsAnOpenTelemetryHTTPInstrumentationForThatServer() error {
 	return godog.ErrPending
+}
+
+func TestMain(m *testing.M) {
+	pflag.Parse()
+	opts.Paths = pflag.Args()
+
+	status := godog.TestSuite{
+		Name:                "HTTP Instrumentation",
+		ScenarioInitializer: InitializeScenario,
+		Options:             &opts,
+	}.Run()
+
+	os.Exit(status)
 }
 
 func InitializeScenario(ctx *godog.ScenarioContext) {
