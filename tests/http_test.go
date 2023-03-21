@@ -5,22 +5,17 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
+	"net"
 	"os"
-	"path/filepath"
-	"sync"
 	"testing"
+
+	v1 "go.opentelemetry.io/proto/otlp/collector/trace/v1"
+	"google.golang.org/grpc"
 
 	"github.com/cucumber/godog"
 	"github.com/cucumber/godog/colors"
 	"github.com/spf13/pflag"
-	"go.opentelemetry.io/collector/component"
-	"go.opentelemetry.io/collector/confmap"
-	"go.opentelemetry.io/collector/confmap/converter/expandconverter"
-	"go.opentelemetry.io/collector/confmap/provider/envprovider"
-	"go.opentelemetry.io/collector/confmap/provider/fileprovider"
-	"go.opentelemetry.io/collector/confmap/provider/httpprovider"
-	"go.opentelemetry.io/collector/confmap/provider/yamlprovider"
-	"go.opentelemetry.io/collector/otelcol"
 )
 
 var opts = godog.Options{Output: colors.Colored(os.Stdout)}
@@ -53,52 +48,42 @@ func thereIsAnOpenTelemetryHTTPInstrumentationForThatServer() error {
 	return godog.ErrPending
 }
 
-func startCollector(ctx context.Context, t *testing.T, col *Collector) *sync.WaitGroup {
-	wg := &sync.WaitGroup{}
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		require.NoError(t, col.Run(ctx))
-	}()
-	return wg
+type server struct {
+	v1.UnimplementedTraceServiceServer
+}
+
+func some_function() error {
+	fmt.Println("some_function")
+	return nil
+}
+
+func (s server) Export(ctx context.Context, req *v1.ExportTraceServiceRequest) (*v1.ExportTraceServiceResponse, error) {
+	some_function()
+	log.Printf("sdfsdfsadfads")
+	log.Printf("%v\n", req)
+	return &v1.ExportTraceServiceResponse{}, nil
 }
 
 func TestMain(m *testing.M) {
 	pflag.Parse()
 	opts.Paths = pflag.Args()
 
-	map_provider := make(map[string]confmap.Provider, 4)
-
-	file_provider := fileprovider.New()
-	env_provider := envprovider.New()
-	yaml_provider := yamlprovider.New()
-	http_provider := httpprovider.New()
-
-	map_provider[file_provider.Scheme()] = file_provider
-	map_provider[env_provider.Scheme()] = env_provider
-	map_provider[yaml_provider.Scheme()] = yaml_provider
-	map_provider[http_provider.Scheme()] = http_provider
-
-	config_provider_settings := otelcol.ConfigProviderSettings{
-		ResolverSettings: confmap.ResolverSettings{
-			URIs:       []string{filepath.Join("testdata", "otelcol-nop.yaml")},
-			Providers:  map_provider,
-			Converters: []confmap.Converter{expandconverter.New()},
-		},
+	listen, err := net.Listen("tcp", ":4317")
+	if err != nil {
+		log.Fatalf("Failed to listen: %v", err)
 	}
 
-	cfgProvider, err := otelcol.NewConfigProvider(config_provider_settings)
+	grpc_server := grpc.NewServer()
 
-	collector_settings := otelcol.CollectorSettings{
-		BuildInfo:      component.NewDefaultBuildInfo(),
-		Factories:      otelcol.Factories{},
-		ConfigProvider: cfgProvider,
+	v1.RegisterTraceServiceServer(grpc_server, server{})
+
+	log.Printf("server listening at %v", listen.Addr())
+
+	go grpc_server.Serve(listen)
+
+	if err := grpc_server.Serve(listen); err != nil {
+		log.Fatalf("Failed to serve: %v", err)
 	}
-
-	col, err := otelcol.NewCollector(collector_settings)
-
-	fmt.Println(col)
-	fmt.Println(err)
 
 	status := godog.TestSuite{
 		Name:                "HTTP Instrumentation",
