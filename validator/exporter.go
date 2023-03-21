@@ -3,7 +3,6 @@ package validator
 import (
 	"context"
 	"fmt"
-	"testing"
 
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/exporter"
@@ -30,10 +29,6 @@ func (ve *validatorExporter) validateTraces(ctx context.Context, td ptrace.Trace
 	trace_id := span.TraceID()
 	fmt.Println(trace_id)
 	return nil
-}
-
-func TestSpanName(t *testing.T) {
-
 }
 
 // validateMetrics validates each metric against its semantic convention
