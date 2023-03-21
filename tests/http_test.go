@@ -3,9 +3,11 @@ package main
 // "go.opentelemetry.io/collector/component"
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
+	"sync"
 	"testing"
 
 	"github.com/cucumber/godog"
@@ -49,6 +51,16 @@ func thereIsAnHTTPServerWithoutALowCardinalityRouteAvailable() error {
 
 func thereIsAnOpenTelemetryHTTPInstrumentationForThatServer() error {
 	return godog.ErrPending
+}
+
+func startCollector(ctx context.Context, t *testing.T, col *Collector) *sync.WaitGroup {
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		require.NoError(t, col.Run(ctx))
+	}()
+	return wg
 }
 
 func TestMain(m *testing.M) {
