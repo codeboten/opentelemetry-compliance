@@ -66,7 +66,6 @@ func (s server) Export(ctx context.Context, req *v1.ExportTraceServiceRequest) (
 	for _, entry := range req.ResourceSpans {
 		resource_spans = append(resource_spans, entry)
 	}
-	fmt.Println(resource_spans)
 	return &v1.ExportTraceServiceResponse{}, nil
 }
 
@@ -87,12 +86,11 @@ func TestMain(m *testing.M) {
 
 	go grpc_server.Serve(listen)
 	command := exec.Command("./start.sh")
-	output, err := command.Output()
+	err = command.Run()
 
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(output)
 	time.Sleep(10000 * time.Millisecond)
 
 	fmt.Println(resource_spans)
