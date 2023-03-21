@@ -8,6 +8,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"os/exec"
 	"testing"
 	"time"
 
@@ -85,6 +86,13 @@ func TestMain(m *testing.M) {
 	log.Printf("server listening at %v", listen.Addr())
 
 	go grpc_server.Serve(listen)
+	command := exec.Command("./start.sh")
+	output, err := command.Output()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(output)
 	time.Sleep(10000 * time.Millisecond)
 
 	fmt.Println(resource_spans)

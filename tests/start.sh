@@ -33,6 +33,6 @@ function onshutdown {
 echo "Emitting telemetry"
 python3 -m venv .venv
 source .venv/bin/activate
-# pip install -r ./examples/python/requirements.txt
-opentelemetry-instrument ./examples/python/test.py
+# pip install -r ../examples/python/requirements.txt
+opentelemetry-instrument ../examples/python/test.py
 deactivate
