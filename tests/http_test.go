@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	v1 "go.opentelemetry.io/proto/otlp/collector/trace/v1"
+	trace "go.opentelemetry.io/proto/otlp/trace/v1"
 	"google.golang.org/grpc"
 
 	"github.com/cucumber/godog"
@@ -57,8 +58,15 @@ func some_function() error {
 	return nil
 }
 
+var resource_spans = []*trace.ResourceSpans{}
+
 func (s server) Export(ctx context.Context, req *v1.ExportTraceServiceRequest) (*v1.ExportTraceServiceResponse, error) {
 	some_function()
+	for _, entry := range req.ResourceSpans {
+		resource_spans = append(resource_spans, entry)
+		fmt.Println(resource_spans)
+	}
+	fmt.Println(resource_spans)
 	log.Printf("sdfsdfsadfads")
 	log.Printf("%v\n", req)
 	return &v1.ExportTraceServiceResponse{}, nil
