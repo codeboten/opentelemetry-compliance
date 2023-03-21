@@ -95,10 +95,6 @@ func TestMain(m *testing.M) {
 
 	fmt.Println(resource_spans)
 
-	//if err := grpc_server.Serve(listen); err != nil {
-	//	log.Fatalf("Failed to serve: %v", err)
-	//}
-
 	status := godog.TestSuite{
 		Name:                "HTTP Instrumentation",
 		ScenarioInitializer: InitializeScenario,
