@@ -9,6 +9,7 @@ import (
 	"net"
 	"os"
 	"testing"
+	"time"
 
 	v1 "go.opentelemetry.io/proto/otlp/collector/trace/v1"
 	trace "go.opentelemetry.io/proto/otlp/trace/v1"
@@ -61,14 +62,10 @@ func some_function() error {
 var resource_spans = []*trace.ResourceSpans{}
 
 func (s server) Export(ctx context.Context, req *v1.ExportTraceServiceRequest) (*v1.ExportTraceServiceResponse, error) {
-	some_function()
 	for _, entry := range req.ResourceSpans {
 		resource_spans = append(resource_spans, entry)
-		fmt.Println(resource_spans)
 	}
 	fmt.Println(resource_spans)
-	log.Printf("sdfsdfsadfads")
-	log.Printf("%v\n", req)
 	return &v1.ExportTraceServiceResponse{}, nil
 }
 
@@ -88,10 +85,13 @@ func TestMain(m *testing.M) {
 	log.Printf("server listening at %v", listen.Addr())
 
 	go grpc_server.Serve(listen)
+	time.Sleep(10000 * time.Millisecond)
 
-	if err := grpc_server.Serve(listen); err != nil {
-		log.Fatalf("Failed to serve: %v", err)
-	}
+	fmt.Println(resource_spans)
+
+	//if err := grpc_server.Serve(listen); err != nil {
+	//	log.Fatalf("Failed to serve: %v", err)
+	//}
 
 	status := godog.TestSuite{
 		Name:                "HTTP Instrumentation",
