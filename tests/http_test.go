@@ -19,7 +19,10 @@ import (
 	"github.com/cucumber/godog"
 	"github.com/cucumber/godog/colors"
 	"github.com/spf13/pflag"
+	"github.com/stretchr/testify/assert"
 )
+
+var resourceSpans = []*trace.ResourceSpans{}
 
 var opts = godog.Options{Output: colors.Colored(os.Stdout)}
 
@@ -28,43 +31,44 @@ func init() {
 }
 
 func thatLowCardinalityRouteAvailableIs(arg1 string) error {
-	return godog.ErrPending
+	return nil
 }
 
 func theInstrumentationCreatesAServerSpanForAGETOperation() error {
-	return godog.ErrPending
+	return nil
 }
 
-func theServerSpanNameSHOULDBe(arg1 string) error {
-	return godog.ErrPending
+func theServerSpanNameSHOULDBe(expectedServerSpanName string) error {
+	span := resourceSpans[0].ScopeSpans[0].Spans[0]
+
+	err := assertExpectedActual(assert.Equal, span.Name, expectedServerSpanName, "%s should be equal to %s", span.Name, expectedServerSpanName)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func thereIsAnHTTPServerWithALowCardinalityRouteAvailable() error {
-	return godog.ErrPending
+	return nil
 }
 
 func thereIsAnHTTPServerWithoutALowCardinalityRouteAvailable() error {
-	return godog.ErrPending
+	return nil
 }
 
 func thereIsAnOpenTelemetryHTTPInstrumentationForThatServer() error {
-	return godog.ErrPending
+	return nil
 }
 
 type server struct {
 	v1.UnimplementedTraceServiceServer
 }
 
-func some_function() error {
-	fmt.Println("some_function")
-	return nil
-}
-
-var resource_spans = []*trace.ResourceSpans{}
-
 func (s server) Export(ctx context.Context, req *v1.ExportTraceServiceRequest) (*v1.ExportTraceServiceResponse, error) {
 	for _, entry := range req.ResourceSpans {
-		resource_spans = append(resource_spans, entry)
+		resourceSpans = append(resourceSpans, entry)
 	}
 	return &v1.ExportTraceServiceResponse{}, nil
 }
@@ -82,8 +86,6 @@ func TestMain(m *testing.M) {
 
 	v1.RegisterTraceServiceServer(grpc_server, server{})
 
-	log.Printf("server listening at %v", listen.Addr())
-
 	go grpc_server.Serve(listen)
 	command := exec.Command("./start.sh")
 	err = command.Run()
@@ -91,9 +93,7 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	time.Sleep(10000 * time.Millisecond)
-
-	fmt.Println(resource_spans)
+	time.Sleep(3000 * time.Millisecond)
 
 	status := godog.TestSuite{
 		Name:                "HTTP Instrumentation",
@@ -111,4 +111,20 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^There is an HTTP server with a low cardinality route available\.$`, thereIsAnHTTPServerWithALowCardinalityRouteAvailable)
 	ctx.Step(`^There is an HTTP server without a low cardinality route available\.$`, thereIsAnHTTPServerWithoutALowCardinalityRouteAvailable)
 	ctx.Step(`^There is an OpenTelemetry HTTP instrumentation for that server\.$`, thereIsAnOpenTelemetryHTTPInstrumentationForThatServer)
+}
+
+type asserter struct {
+	err error
+}
+
+type expectActualAssertion func(t assert.TestingT, expected, actual interface{}, messageArgs ...interface{}) bool
+
+func assertExpectedActual(assertion expectActualAssertion, expected, actual interface{}, messageAndArgs ...interface{}) error {
+	var t asserter
+	assertion(&t, expected, actual, messageAndArgs...)
+	return t.err
+}
+
+func (a *asserter) Errorf(format string, args ...interface{}) {
+	a.err = fmt.Errorf(format, args...)
 }
