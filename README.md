@@ -25,3 +25,30 @@ Run code that produces telemetry and emits it using OTLP. The current example us
 ```bash
 ./start.sh
 ```
+
+### Run with dlv
+
+Run with `dlv` to debug the collector execution
+
+```bash
+dlv exec bin/otel-validator -- --config validator/config.yaml
+```
+
+To avoid a `no such file or directory` error when running the debugger, this needs to be added to `$HOME/.config/dlv/config.yml`:
+
+```
+substitute-path:
+  - {from: github.com/codeboten/opentelemetry-compliance/validator@v0.0.0, to: /your/path/to/the/local/repo/opentelemetry-compliance/validator}
+```
+
+### Run with dvl to execute test cases
+
+```bash
+tigre@hilleman:~/github/codeboten/opentelemetry-compliance/tests$ dlv test http_test.go
+```
+
+In other console
+
+```bash
+tigre@hilleman:~/github/codeboten/opentelemetry-compliance$ ./start.sh
+```

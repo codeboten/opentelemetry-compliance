@@ -1,7 +1,7 @@
 GO ?= go
 GORELEASER ?= goreleaser
 
-OTELCOL_BUILDER_VERSION ?= 0.68.0
+OTELCOL_BUILDER_VERSION ?= 0.70.0
 OTELCOL_BUILDER_DIR ?= $(shell git rev-parse --show-toplevel)/bin
 OTELCOL_BUILDER ?= ${OTELCOL_BUILDER_DIR}/ocb
 

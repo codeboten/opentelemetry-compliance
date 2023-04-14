@@ -18,12 +18,16 @@ type validatorExporter struct {
 // validateTraces validates each span against its semantic convention
 func (ve *validatorExporter) validateTraces(ctx context.Context, td ptrace.Traces) error {
 	resourceSpans := td.ResourceSpans()
-	if resourceSpans.Len() == 0 {
-		return nil
-	}
-	for i := 0; i < resourceSpans.Len(); i++ {
-		fmt.Println(resourceSpans.At(i))
-	}
+	resource_spans_0 := resourceSpans.At(0)
+	scopespans := resource_spans_0.ScopeSpans()
+	scopespan := scopespans.At(0)
+	// pdata/ptrace/generated_traces.go:401
+	spans := scopespan.Spans()
+	// pdata/ptrace/generated_traces.go:452
+	span := spans.At(0)
+	// pdata/ptrace/generated_traces.go:580
+	trace_id := span.TraceID()
+	fmt.Println(trace_id)
 	return nil
 }
 
